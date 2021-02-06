@@ -28,13 +28,25 @@ struct SpriteViewModel: Codable {
 }
 
 struct Sprites: Codable {
+    var sprites: Sprite?
+    var other: OtherSprite?
+}
+
+struct Sprite: Codable {
     var back_default: String?
     var back_female: String?
     var back_shiny: String?
     var back_shiny_female: String?
     var front_default: String?
-    var front_female: Double?
+    var front_female: String?
     var front_shiny: String?
     var front_shiny_female: String?
 }
 
+struct OtherSprite: Codable {
+    var dream_world: [FrontURL]?
+}
+
+struct FrontURL: Codable {
+    var front_default: String?
+}

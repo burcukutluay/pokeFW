@@ -10,13 +10,23 @@ import AlamofireImage
 import UIKit
 
 public class InfoView: UIView {
-    fileprivate weak var descriptionLabel: UILabel!
-    fileprivate weak var descriptionImageView: UIImageView!
     
-    public func setupUI(keyword: String) {
-        if keyword != "" {
-            self.getFlavorText(keyword: keyword)
+    fileprivate weak var descriptionLabel: UILabel!
+    fileprivate weak var descriptionImageView: UIImageView! {
+        didSet {
+            self.reloadInputViews()
         }
+    }
+    
+    public func getResultView(keyword: String) -> UIView {
+        let queue = SimultaneousOperationsQueue(numberOfSimultaneousActions: 1, dispatchQueueLabel: "AnyString")
+        queue.whenCompleteAll = { print("All Done") }
+        queue.run { (complete) in
+            self.getFlavorText(keyword: keyword)
+            complete()
+        }
+        return self
+        //self.getFlavorText(keyword: keyword)
     }
     
     fileprivate func createSubviews() {
@@ -62,13 +72,14 @@ public class InfoView: UIView {
     }
     
     
-    public func getDescriptionResult(keyword: String) {
-        let url = "https://pokeapi.co/api/v2/pokemon/\(keyword)"
-        SpriteViewModel.getSprite(url: url, successHandler: {(data) in
-            print(data)
-            let stringURL = data.back_default ?? ""
+    fileprivate func getDescriptionResult(keyword: String) {
+        let urlAPI = "https://pokeapi.co/api/v2/pokemon/\(keyword)"
+        SpriteViewModel.getSprite(url: urlAPI, successHandler: {(data) in
+            let stringURL = data.sprites?.back_default ?? ""
             let url = URL(string: stringURL)
-            self.descriptionImageView.af.setImage(withURL: url!)
+            self.downloadImage(from: url!)
+            //self.descriptionImageView.af.setImage(withURL: url!) // alomafire error for new ios version
+            
             
         })
         { (error) in
@@ -76,21 +87,46 @@ public class InfoView: UIView {
         }
     }
     
-    public func getFlavorText(keyword: String) {
+    func getData(from url: URL, completion: @escaping (Data?, URLResponse?, Error?) -> ()) {
+        URLSession.shared.dataTask(with: url, completionHandler: completion).resume()
+    }
+    
+    func downloadImage(from url: URL) {
+        print("Download Started")
+        getData(from: url) { data, response, error in
+            guard let data = data, error == nil else { return }
+            print(response?.suggestedFilename ?? url.lastPathComponent)
+            print("Download Finished")
+            DispatchQueue.main.async() { [weak self] in
+                self?.descriptionImageView.image = UIImage(data: data)
+            }
+        }
+    }
+    
+    fileprivate func getFlavorText(keyword: String) {
         let url = "https://pokeapi.co/api/v2/pokemon-species/\(keyword)"
         FlavorTextEntriesViewModel.getFlavorTextEntries(url: url) { (data) in
-            print(data)
             if data.id != nil {
                 self.createSubviews()
-                self.getDescriptionResult(keyword: keyword)
-                let array = data.flavor_text_entries ?? []
+                var array = (data.flavor_text_entries ?? [])
+                array = array.unique()
                 var text: String = ""
                 if array.count > 0 {
                     for item in array {
-                        text.append(item.flavor_text ?? "")
-                        text.append("\n")
+                        if item.language?.name == "en" {
+                            var appendText = item.flavor_text ?? ""
+                            appendText = appendText.replacingOccurrences(of: "\n", with: " ")
+                            text.append(appendText)
+                        }
                     }
                     self.descriptionLabel.text = text
+                }
+                
+                let varities = data.varieties ?? []
+                for item in varities {
+                    if (item.is_default ?? false) {
+                        self.getDescriptionResult(keyword: item.pokemon?.name ?? "")
+                    }
                 }
             }
         } failHandler: { (error) in
