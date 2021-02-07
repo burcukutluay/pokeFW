@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import UIKit
 
 struct SpriteViewModel: Codable {
     
@@ -21,7 +22,23 @@ struct SpriteViewModel: Codable {
                                         dataModel: Sprites.self,
                                         successHandler: { (data) in
                                             successHandler(data)
-        }) { (error) in
+                                        }) { (error) in
+            failHandler(error)
+        }
+    }
+    
+    static func getSprite(infoView: UIView, url: String, successHandler: @escaping (Sprites) -> (), failHandler: @escaping (String) -> (), completionHandler: @escaping (UIView) -> ()) {
+        
+        let url = url
+        BaseService.shared.startRequest(url,
+                                        method: .get,
+                                        parameters: nil,
+                                        headers: nil,
+                                        dataModel: Sprites.self,
+                                        successHandler: { (data) in
+                                            successHandler(data)
+                                            completionHandler(infoView)
+                                        }) { (error) in
             failHandler(error)
         }
     }

@@ -12,32 +12,33 @@ import UIKit
 public class InfoView: UIView {
     
     fileprivate weak var descriptionLabel: UILabel!
-    fileprivate weak var descriptionImageView: UIImageView! {
-        didSet {
-            self.reloadInputViews()
-        }
+    fileprivate weak var descriptionImageView: UIImageView!
+    
+    fileprivate var descriptionText: String = ""
+    fileprivate var descriptionImageURL: URL?
+    fileprivate var descriptionImage: UIImage?
+    
+    override public init(frame: CGRect) {
+        super.init(frame: frame)
+        addConstraints()
     }
     
-    public func getResultView(keyword: String) -> UIView {
-        let queue = SimultaneousOperationsQueue(numberOfSimultaneousActions: 1, dispatchQueueLabel: "AnyString")
-        queue.whenCompleteAll = { print("All Done") }
-        queue.run { (complete) in
-            self.getFlavorText(keyword: keyword)
-            complete()
-        }
-        return self
-        //self.getFlavorText(keyword: keyword)
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    public func getResultView(keyword: String) {
+        self.getFlavorText(keyword: keyword)
     }
     
     fileprivate func createSubviews() {
         
         let _descriptionLabel = UILabel()
         descriptionLabel = _descriptionLabel
-        descriptionLabel.translatesAutoresizingMaskIntoConstraints = false
         descriptionLabel.font = UIFont.systemFont(ofSize: 16.0)
         descriptionLabel.numberOfLines = 0
         descriptionLabel.lineBreakMode = NSLineBreakMode.byWordWrapping
-        descriptionLabel.sizeToFit()
+        descriptionLabel.translatesAutoresizingMaskIntoConstraints = false
         descriptionLabel.backgroundColor = UIColor.clear
         descriptionLabel.textAlignment = .left
         descriptionLabel.textColor = UIColor.ColorPalette.labelColor
@@ -45,44 +46,44 @@ public class InfoView: UIView {
         
         let _descriptionImageView = UIImageView()
         descriptionImageView = _descriptionImageView
-        descriptionImageView.translatesAutoresizingMaskIntoConstraints = false
         descriptionImageView.backgroundColor = UIColor.clear
+        descriptionImageView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(descriptionImageView)
+        self.descriptionLabel.text = self.descriptionText
+        self.descriptionImageView.image = self.descriptionImage
     }
     
     fileprivate func getDescriptionHeight() -> CGFloat {
         return getLabelHeight(text: descriptionLabel.text ?? "")
     }
     
-    fileprivate func addConstraints() {
+    public func addConstraints() {
+        createSubviews()
         addConstraints([
-            descriptionImageView.centerYAnchor.constraint(equalTo: centerYAnchor, constant: 0),
-            descriptionImageView.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.size.width / 2),
-            descriptionImageView.centerXAnchor.constraint(equalTo: centerXAnchor, constant: 0),
-            descriptionImageView.heightAnchor.constraint(equalToConstant: UIScreen.main.bounds.size.width / 2)
-        ])
-        addConstraints([
-            descriptionLabel.topAnchor.constraint(equalTo: descriptionLabel.bottomAnchor, constant: 15),
+            descriptionLabel.topAnchor.constraint(equalTo: topAnchor, constant: 15),
             descriptionLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -15),
             descriptionLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 15),
             descriptionLabel.heightAnchor.constraint(equalToConstant: getDescriptionHeight())
         ])
         
+        addConstraints([
+            descriptionImageView.topAnchor.constraint(equalTo: topAnchor, constant: getDescriptionHeight() + 15),
+            descriptionImageView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 50),
+            descriptionImageView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -50),
+            descriptionImageView.heightAnchor.constraint(equalToConstant: 100)
+        ])
         layoutIfNeeded()
     }
     
     
-    fileprivate func getDescriptionResult(keyword: String) {
+    fileprivate func getDescriptionImage(keyword: String) {
         let urlAPI = "https://pokeapi.co/api/v2/pokemon/\(keyword)"
-        SpriteViewModel.getSprite(url: urlAPI, successHandler: {(data) in
+        SpriteViewModel.getSprite(url: urlAPI) { (data) in
             let stringURL = data.sprites?.back_default ?? ""
             let url = URL(string: stringURL)
+            self.descriptionImageURL = url!
             self.downloadImage(from: url!)
-            //self.descriptionImageView.af.setImage(withURL: url!) // alomafire error for new ios version
-            
-            
-        })
-        { (error) in
+        } failHandler: { (error) in
             print(error)
         }
     }
@@ -92,22 +93,23 @@ public class InfoView: UIView {
     }
     
     func downloadImage(from url: URL) {
-        print("Download Started")
         getData(from: url) { data, response, error in
             guard let data = data, error == nil else { return }
             print(response?.suggestedFilename ?? url.lastPathComponent)
-            print("Download Finished")
             DispatchQueue.main.async() { [weak self] in
                 self?.descriptionImageView.image = UIImage(data: data)
+                self?.descriptionImage = UIImage(data: data)
             }
         }
+        self.descriptionLabel.removeFromSuperview()
+        self.descriptionImageView.removeFromSuperview()
+        self.addConstraints()
     }
     
     fileprivate func getFlavorText(keyword: String) {
         let url = "https://pokeapi.co/api/v2/pokemon-species/\(keyword)"
         FlavorTextEntriesViewModel.getFlavorTextEntries(url: url) { (data) in
             if data.id != nil {
-                self.createSubviews()
                 var array = (data.flavor_text_entries ?? [])
                 array = array.unique()
                 var text: String = ""
@@ -120,12 +122,13 @@ public class InfoView: UIView {
                         }
                     }
                     self.descriptionLabel.text = text
+                    self.descriptionText = text
                 }
                 
                 let varities = data.varieties ?? []
                 for item in varities {
                     if (item.is_default ?? false) {
-                        self.getDescriptionResult(keyword: item.pokemon?.name ?? "")
+                        self.getDescriptionImage(keyword: item.pokemon?.name ?? "")
                     }
                 }
             }
