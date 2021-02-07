@@ -27,7 +27,7 @@ public class InfoView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    public func getResultView(keyword: String) {
+    public func getAndSetResultView(keyword: String) {
         self.getFlavorText(keyword: keyword)
     }
     
@@ -57,7 +57,7 @@ public class InfoView: UIView {
         return getLabelHeight(text: descriptionLabel.text ?? "")
     }
     
-    public func addConstraints() {
+    private func addConstraints() {
         createSubviews()
         addConstraints([
             descriptionLabel.topAnchor.constraint(equalTo: topAnchor, constant: 15),
@@ -68,9 +68,9 @@ public class InfoView: UIView {
         
         addConstraints([
             descriptionImageView.topAnchor.constraint(equalTo: topAnchor, constant: getDescriptionHeight() + 15),
-            descriptionImageView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 50),
-            descriptionImageView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -50),
-            descriptionImageView.heightAnchor.constraint(equalToConstant: 100)
+            descriptionImageView.heightAnchor.constraint(equalToConstant: descriptionImage?.size.height ?? 0),
+            descriptionImageView.widthAnchor.constraint(equalToConstant: descriptionImage?.size.width ?? 0),
+            descriptionImageView.centerXAnchor.constraint(equalTo: centerXAnchor, constant: 0)
         ])
         layoutIfNeeded()
     }
@@ -99,11 +99,12 @@ public class InfoView: UIView {
             DispatchQueue.main.async() { [weak self] in
                 self?.descriptionImageView.image = UIImage(data: data)
                 self?.descriptionImage = UIImage(data: data)
+                // update constraints during run time
+                self?.descriptionLabel.removeFromSuperview()
+                self?.descriptionImageView.removeFromSuperview()
+                self?.addConstraints()
             }
         }
-        self.descriptionLabel.removeFromSuperview()
-        self.descriptionImageView.removeFromSuperview()
-        self.addConstraints()
     }
     
     fileprivate func getFlavorText(keyword: String) {
@@ -121,6 +122,7 @@ public class InfoView: UIView {
                             text.append(appendText)
                         }
                     }
+                    // text will be translated to shakspearean style
                     self.descriptionLabel.text = text
                     self.descriptionText = text
                 }
@@ -128,6 +130,7 @@ public class InfoView: UIView {
                 let varities = data.varieties ?? []
                 for item in varities {
                     if (item.is_default ?? false) {
+                        // get & set image
                         self.getDescriptionImage(keyword: item.pokemon?.name ?? "")
                     }
                 }

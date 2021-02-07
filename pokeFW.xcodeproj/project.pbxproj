@@ -12,7 +12,6 @@
 		5000963225CEA92700DFE5B6 /* pokeFW.h in Headers */ = {isa = PBXBuildFile; fileRef = 5000962425CEA92600DFE5B6 /* pokeFW.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		5000964125CEB01F00DFE5B6 /* BaseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5000964025CEB01F00DFE5B6 /* BaseService.swift */; };
 		503ECE3F25CF352E0018685A /* ArrayExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 503ECE3E25CF352E0018685A /* ArrayExtension.swift */; };
-		503ECE9B25CF52430018685A /* SimultaneousOperationsQue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 503ECE9A25CF52430018685A /* SimultaneousOperationsQue.swift */; };
 		50F0BE4F25CECC41001462D6 /* UIDeviceExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50F0BE4E25CECC41001462D6 /* UIDeviceExtension.swift */; };
 		50F0BE5625CECD72001462D6 /* InfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50F0BE5525CECD72001462D6 /* InfoView.swift */; };
 		50F0BE6225CED035001462D6 /* SpriteViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50F0BE6125CED035001462D6 /* SpriteViewModel.swift */; };
@@ -43,7 +42,6 @@
 		5000963125CEA92700DFE5B6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5000964025CEB01F00DFE5B6 /* BaseService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseService.swift; sourceTree = "<group>"; };
 		503ECE3E25CF352E0018685A /* ArrayExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArrayExtension.swift; sourceTree = "<group>"; };
-		503ECE9A25CF52430018685A /* SimultaneousOperationsQue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimultaneousOperationsQue.swift; sourceTree = "<group>"; };
 		50F0BE4E25CECC41001462D6 /* UIDeviceExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIDeviceExtension.swift; sourceTree = "<group>"; };
 		50F0BE5525CECD72001462D6 /* InfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoView.swift; sourceTree = "<group>"; };
 		50F0BE6125CED035001462D6 /* SpriteViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpriteViewModel.swift; sourceTree = "<group>"; };
@@ -119,7 +117,6 @@
 			isa = PBXGroup;
 			children = (
 				5000964025CEB01F00DFE5B6 /* BaseService.swift */,
-				503ECE9A25CF52430018685A /* SimultaneousOperationsQue.swift */,
 			);
 			path = Network;
 			sourceTree = "<group>";
@@ -350,7 +347,6 @@
 			files = (
 				5000964125CEB01F00DFE5B6 /* BaseService.swift in Sources */,
 				50F0BE5625CECD72001462D6 /* InfoView.swift in Sources */,
-				503ECE9B25CF52430018685A /* SimultaneousOperationsQue.swift in Sources */,
 				50F0BE6225CED035001462D6 /* SpriteViewModel.swift in Sources */,
 				50F0BE6925CEEDB2001462D6 /* ColorExtension.swift in Sources */,
 				503ECE3F25CF352E0018685A /* ArrayExtension.swift in Sources */,
