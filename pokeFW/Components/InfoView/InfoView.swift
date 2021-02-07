@@ -57,7 +57,7 @@ public class InfoView: UIView {
         return getLabelHeight(text: descriptionLabel.text ?? "")
     }
     
-    private func addConstraints() {
+    fileprivate func addConstraints() {
         createSubviews()
         addConstraints([
             descriptionLabel.topAnchor.constraint(equalTo: topAnchor, constant: 15),
@@ -88,11 +88,11 @@ public class InfoView: UIView {
         }
     }
     
-    func getData(from url: URL, completion: @escaping (Data?, URLResponse?, Error?) -> ()) {
+    fileprivate func getData(from url: URL, completion: @escaping (Data?, URLResponse?, Error?) -> ()) {
         URLSession.shared.dataTask(with: url, completionHandler: completion).resume()
     }
     
-    func downloadImage(from url: URL) {
+    fileprivate func downloadImage(from url: URL) {
         getData(from: url) { data, response, error in
             guard let data = data, error == nil else { return }
             print(response?.suggestedFilename ?? url.lastPathComponent)
@@ -100,11 +100,15 @@ public class InfoView: UIView {
                 self?.descriptionImageView.image = UIImage(data: data)
                 self?.descriptionImage = UIImage(data: data)
                 // update constraints during run time
-                self?.descriptionLabel.removeFromSuperview()
-                self?.descriptionImageView.removeFromSuperview()
-                self?.addConstraints()
+                self?.redrawUpdateViews()
             }
         }
+    }
+    
+    fileprivate func redrawUpdateViews() {
+        self.descriptionLabel.removeFromSuperview()
+        self.descriptionImageView.removeFromSuperview()
+        self.addConstraints()
     }
     
     fileprivate func getFlavorText(keyword: String) {
@@ -123,8 +127,20 @@ public class InfoView: UIView {
                         }
                     }
                     // text will be translated to shakspearean style
-                    self.descriptionLabel.text = text
-                    self.descriptionText = text
+                    // if there is no text the reason is ratelimiting. for more information: https://funtranslations.com/api/shakespeare
+                    let url = "https://api.funtranslations.com/translate/shakespeare.json"
+                    ShakespearenViewModel.getShakespeareanDetail(text: text, url: url) { (data) in
+                        print(data)
+                        self.descriptionLabel.text = data.contents?.translated ?? ""
+                        self.descriptionText = data.contents?.translated ?? ""
+                        // update constraints during run time
+                        self.redrawUpdateViews()
+                    } failHandler: { (error) in
+                        print(error)
+                    }
+                    // read from shakespeare translator API thats why commented :)
+                    //self.descriptionLabel.text = text
+                    //self.descriptionText = text
                 }
                 
                 let varities = data.varieties ?? []
