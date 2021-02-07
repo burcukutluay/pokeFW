@@ -14,8 +14,8 @@ public class InfoView: UIView {
     fileprivate weak var descriptionLabel: UILabel!
     fileprivate weak var descriptionImageView: UIImageView!
     
-    fileprivate var descriptionText: String = ""
-    fileprivate var descriptionImageURL: URL?
+    public var descriptionText: String = ""
+    public var descriptionImageURL: URL?
     fileprivate var descriptionImage: UIImage?
     
     override public init(frame: CGRect) {
@@ -30,9 +30,8 @@ public class InfoView: UIView {
     public func getAndSetResultView(keyword: String) {
         self.getFlavorText(keyword: keyword)
     }
-    
-    fileprivate func createSubviews() {
         
+    fileprivate func createSubviews() {
         let _descriptionLabel = UILabel()
         descriptionLabel = _descriptionLabel
         descriptionLabel.font = UIFont.systemFont(ofSize: 16.0)
@@ -112,6 +111,7 @@ public class InfoView: UIView {
     }
     
     fileprivate func getFlavorText(keyword: String) {
+        let keyword = keyword.lowercased()
         let url = "https://pokeapi.co/api/v2/pokemon-species/\(keyword)"
         FlavorTextEntriesViewModel.getFlavorTextEntries(url: url) { (data) in
             if data.id != nil {
@@ -128,7 +128,7 @@ public class InfoView: UIView {
                     }
                     // text will be translated to shakspearean style
                     // if there is no text the reason is ratelimiting. for more information: https://funtranslations.com/api/shakespeare
-                    let url = "https://api.funtranslations.com/translate/shakespeare.json"
+                  /* let url = "https://api.funtranslations.com/translate/shakespeare.json"
                     ShakespearenViewModel.getShakespeareanDetail(text: text, url: url) { (data) in
                         print(data)
                         self.descriptionLabel.text = data.contents?.translated ?? ""
@@ -137,10 +137,10 @@ public class InfoView: UIView {
                         self.redrawUpdateViews()
                     } failHandler: { (error) in
                         print(error)
-                    }
+                    }*/
                     // read from shakespeare translator API thats why commented :)
-                    //self.descriptionLabel.text = text
-                    //self.descriptionText = text
+                    self.descriptionLabel.text = text
+                    self.descriptionText = text
                 }
                 
                 let varities = data.varieties ?? []
