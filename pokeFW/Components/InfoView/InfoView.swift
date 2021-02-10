@@ -11,14 +11,18 @@ import UIKit
 
 public class InfoView: UIView {
     
+    // MARK: - Private Properties
+    
     fileprivate weak var descriptionLabel: UILabel!
     fileprivate weak var descriptionImageView: UIImageView!
+    fileprivate var descriptionImage: UIImage?
+    
+    // MARK: - Public Properties
     
     public var descriptionText: String = ""
     public var descriptionImageURL: URL?
-    fileprivate var descriptionImage: UIImage?
     
-    // MARK- Public functions
+    // MARK: - Public Functions
     
     override public init(frame: CGRect) {
         super.init(frame: frame)
@@ -32,12 +36,8 @@ public class InfoView: UIView {
         self.getFlavorText(keyword: keyword)
     }
     
-    public func refreshLayout() {
-        
-    }
+    // MARK: - Layout Functions
     
-    // MARK - Private Functions:
-        
     fileprivate func createSubviews() {
         let _descriptionLabel = UILabel()
         descriptionLabel = _descriptionLabel
@@ -63,6 +63,23 @@ public class InfoView: UIView {
         return getLabelHeight(text: descriptionLabel.text ?? "")
     }
     
+    fileprivate final func calculateLabelSize(text: String) -> CGSize {
+        return (text as NSString).size(withAttributes: [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 13, weight: .regular)])
+    }
+    
+    fileprivate func getLabelHeight(text: String) -> CGFloat {
+        
+        let size = self.calculateLabelSize(text: text)
+        let const = size.width / (UIScreen.main.bounds.size.width - 40)
+        let constInt = Int(ceil(const))
+        if const > 1 {
+            return CGFloat((constInt * 27) + 15)
+        }
+        else {
+            return 60
+        }
+    }
+    
     fileprivate func addConstraints() {
         createSubviews()
         addConstraints([
@@ -81,6 +98,7 @@ public class InfoView: UIView {
         layoutIfNeeded()
     }
     
+    // MARK: - Network Functions
     
     fileprivate func getDescriptionImage(keyword: String) {
         let urlAPI = "https://pokeapi.co/api/v2/pokemon/\(keyword)"
@@ -127,16 +145,16 @@ public class InfoView: UIView {
                     }
                     // text will be translated to shakspearean style
                     // if there is no text the reason is ratelimiting. for more information: https://funtranslations.com/api/shakespeare
-                  /* let url = "https://api.funtranslations.com/translate/shakespeare.json"
-                    ShakespearenViewModel.getShakespeareanDetail(text: text, url: url) { (data) in
-                        print(data)
-                        self.descriptionLabel.text = data.contents?.translated ?? ""
-                        self.descriptionText = data.contents?.translated ?? ""
-                        // update constraints during run time
-                        self.redrawUpdateViews()
-                    } failHandler: { (error) in
-                        print(error)
-                    }*/
+                    /* let url = "https://api.funtranslations.com/translate/shakespeare.json"
+                     ShakespearenViewModel.getShakespeareanDetail(text: text, url: url) { (data) in
+                     print(data)
+                     self.descriptionLabel.text = data.contents?.translated ?? ""
+                     self.descriptionText = data.contents?.translated ?? ""
+                     // update constraints during run time
+                     self.redrawUpdateViews()
+                     } failHandler: { (error) in
+                     print(error)
+                     }*/
                     // read from shakespeare translator API thats why commented :)
                     self.descriptionText = text
                 }
@@ -151,23 +169,6 @@ public class InfoView: UIView {
             }
         } failHandler: { (error) in
             print(error)
-        }
-    }
-    
-    fileprivate final func calculateLabelSize(text: String) -> CGSize {
-        return (text as NSString).size(withAttributes: [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 13, weight: .regular)])
-    }
-    
-    fileprivate func getLabelHeight(text: String) -> CGFloat {
-        
-        let size = self.calculateLabelSize(text: text)
-        let const = size.width / (UIScreen.main.bounds.size.width - 40)
-        let constInt = Int(ceil(const))
-        if const > 1 {
-            return CGFloat((constInt * 27) + 15)
-        }
-        else {
-            return 60
         }
     }
 }
