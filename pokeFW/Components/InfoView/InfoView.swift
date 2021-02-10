@@ -18,9 +18,10 @@ public class InfoView: UIView {
     public var descriptionImageURL: URL?
     fileprivate var descriptionImage: UIImage?
     
+    // MARK- Public functions
+    
     override public init(frame: CGRect) {
         super.init(frame: frame)
-        addConstraints()
     }
     
     required init?(coder: NSCoder) {
@@ -30,6 +31,12 @@ public class InfoView: UIView {
     public func getAndSetResultView(keyword: String) {
         self.getFlavorText(keyword: keyword)
     }
+    
+    public func refreshLayout() {
+        
+    }
+    
+    // MARK - Private Functions:
         
     fileprivate func createSubviews() {
         let _descriptionLabel = UILabel()
@@ -96,18 +103,10 @@ public class InfoView: UIView {
             guard let data = data, error == nil else { return }
             print(response?.suggestedFilename ?? url.lastPathComponent)
             DispatchQueue.main.async() { [weak self] in
-                self?.descriptionImageView.image = UIImage(data: data)
                 self?.descriptionImage = UIImage(data: data)
-                // update constraints during run time
-                self?.redrawUpdateViews()
+                self?.addConstraints()
             }
         }
-    }
-    
-    fileprivate func redrawUpdateViews() {
-        self.descriptionLabel.removeFromSuperview()
-        self.descriptionImageView.removeFromSuperview()
-        self.addConstraints()
     }
     
     fileprivate func getFlavorText(keyword: String) {
@@ -139,7 +138,6 @@ public class InfoView: UIView {
                         print(error)
                     }*/
                     // read from shakespeare translator API thats why commented :)
-                    self.descriptionLabel.text = text
                     self.descriptionText = text
                 }
                 
