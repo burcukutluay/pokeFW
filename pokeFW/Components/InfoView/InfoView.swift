@@ -9,6 +9,10 @@ import Foundation
 import AlamofireImage
 import UIKit
 
+public protocol InfoViewDelegate: class {
+    func viewShouldReturn(view: InfoView, height: CGFloat)
+}
+
 public class InfoView: UIView {
     
     // MARK: - Private Properties
@@ -21,6 +25,7 @@ public class InfoView: UIView {
     
     public var descriptionText: String = ""
     public var descriptionImageURL: URL?
+    public weak var infoViewDelegate: InfoViewDelegate?
     
     // MARK: - Public Functions
     
@@ -36,27 +41,35 @@ public class InfoView: UIView {
         self.getFlavorText(keyword: keyword)
     }
     
+    public func deleteSubviews() {
+        for item in subviews {
+            item.removeFromSuperview()
+        }
+    }
+    
     // MARK: - Layout Functions
     
     fileprivate func createSubviews() {
         let _descriptionLabel = UILabel()
-        descriptionLabel = _descriptionLabel
-        descriptionLabel.font = UIFont.systemFont(ofSize: 16.0)
-        descriptionLabel.numberOfLines = 0
-        descriptionLabel.lineBreakMode = NSLineBreakMode.byWordWrapping
-        descriptionLabel.translatesAutoresizingMaskIntoConstraints = false
-        descriptionLabel.backgroundColor = UIColor.clear
-        descriptionLabel.textAlignment = .left
-        descriptionLabel.textColor = UIColor.ColorPalette.labelColor
+        self.descriptionLabel = _descriptionLabel
+        self.descriptionLabel.font = UIFont.systemFont(ofSize: 16.0)
+        self.descriptionLabel.numberOfLines = 0
+        self.descriptionLabel.lineBreakMode = NSLineBreakMode.byWordWrapping
+        self.descriptionLabel.translatesAutoresizingMaskIntoConstraints = false
+        self.descriptionLabel.backgroundColor = UIColor.clear
+        self.descriptionLabel.textAlignment = .left
+        self.descriptionLabel.textColor = UIColor.ColorPalette.labelColor
+        self.descriptionLabel.text = self.descriptionText
         addSubview(descriptionLabel)
         
         let _descriptionImageView = UIImageView()
-        descriptionImageView = _descriptionImageView
-        descriptionImageView.backgroundColor = UIColor.clear
-        descriptionImageView.translatesAutoresizingMaskIntoConstraints = false
+        self.descriptionImageView = _descriptionImageView
+        self.descriptionImageView.backgroundColor = UIColor.clear
+        self.descriptionImageView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(descriptionImageView)
-        self.descriptionLabel.text = self.descriptionText
         self.descriptionImageView.image = self.descriptionImage
+        self.addConstraints()
+        
     }
     
     fileprivate func getDescriptionHeight() -> CGFloat {
@@ -73,7 +86,7 @@ public class InfoView: UIView {
         let const = size.width / (UIScreen.main.bounds.size.width - 40)
         let constInt = Int(ceil(const))
         if const > 1 {
-            return CGFloat((constInt * 27) + 15)
+            return CGFloat((constInt * 24) + 15)
         }
         else {
             return 60
@@ -81,21 +94,21 @@ public class InfoView: UIView {
     }
     
     fileprivate func addConstraints() {
-        createSubviews()
         addConstraints([
             descriptionLabel.topAnchor.constraint(equalTo: topAnchor, constant: 15),
             descriptionLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -15),
             descriptionLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 15),
             descriptionLabel.heightAnchor.constraint(equalToConstant: getDescriptionHeight())
         ])
-        
         addConstraints([
             descriptionImageView.topAnchor.constraint(equalTo: topAnchor, constant: getDescriptionHeight() + 15),
             descriptionImageView.heightAnchor.constraint(equalToConstant: descriptionImage?.size.height ?? 0),
             descriptionImageView.widthAnchor.constraint(equalToConstant: descriptionImage?.size.width ?? 0),
             descriptionImageView.centerXAnchor.constraint(equalTo: centerXAnchor, constant: 0)
         ])
-        layoutIfNeeded()
+            layoutIfNeeded()
+        let height: CGFloat = 15 + getDescriptionHeight() + 15 + (descriptionImage?.size.height ?? 0) + 15
+        infoViewDelegate?.viewShouldReturn(view: self, height: height)
     }
     
     // MARK: - Network Functions
@@ -116,13 +129,13 @@ public class InfoView: UIView {
         URLSession.shared.dataTask(with: url, completionHandler: completion).resume()
     }
     
-    fileprivate func downloadImage(from url: URL) {
+    func downloadImage(from url: URL) {
         getData(from: url) { data, response, error in
             guard let data = data, error == nil else { return }
             print(response?.suggestedFilename ?? url.lastPathComponent)
             DispatchQueue.main.async() { [weak self] in
                 self?.descriptionImage = UIImage(data: data)
-                self?.addConstraints()
+                self?.createSubviews()
             }
         }
     }
@@ -132,16 +145,18 @@ public class InfoView: UIView {
         let url = "https://pokeapi.co/api/v2/pokemon-species/\(keyword)"
         FlavorTextEntriesViewModel.getFlavorTextEntries(url: url) { (data) in
             if data.id != nil {
-                var array = (data.flavor_text_entries ?? [])
-                array = array.unique()
+                var dataArray = (data.flavor_text_entries ?? [])
+                dataArray = dataArray.filter({ (text) -> Bool in
+                    text.language?.name == "en"
+                })
+                dataArray = dataArray.unique()
                 var text: String = ""
-                if array.count > 0 {
-                    for item in array {
-                        if item.language?.name == "en" {
-                            var appendText = item.flavor_text ?? ""
+                if dataArray.count > 0 {
+                    for item in dataArray {
+                        var appendText = item.flavor_text ?? ""
                             appendText = appendText.replacingOccurrences(of: "\n", with: " ")
+                            appendText = appendText.replacingOccurrences(of: "\u{0C}", with: " ")
                             text.append(appendText)
-                        }
                     }
                     // text will be translated to shakspearean style
                     // if there is no text the reason is ratelimiting. for more information: https://funtranslations.com/api/shakespeare

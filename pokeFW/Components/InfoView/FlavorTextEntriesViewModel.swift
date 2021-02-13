@@ -38,7 +38,14 @@ struct PokeDetail: Codable {
 struct FlavorText: Codable, Equatable {
     
     static func == (lhs: FlavorText, rhs: FlavorText) -> Bool {
-        return lhs.flavor_text == rhs.flavor_text ? true : false
+        var lhs_flavor_text = lhs.flavor_text ?? ""
+        lhs_flavor_text = lhs_flavor_text.replacingOccurrences(of: "\n", with: " ")
+        lhs_flavor_text = lhs_flavor_text.replacingOccurrences(of: "\u{0C}", with: " ")
+        
+        var rhs_flavor_text = rhs.flavor_text ?? ""
+        rhs_flavor_text = rhs_flavor_text.replacingOccurrences(of: "\n", with: " ")
+        rhs_flavor_text = rhs_flavor_text.replacingOccurrences(of: "\u{0C}", with: " ")
+        return lhs_flavor_text == rhs_flavor_text ? true : false
     }
     
     var flavor_text: String?
