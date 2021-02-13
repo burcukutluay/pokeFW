@@ -1,21 +1,14 @@
 # Uncomment the next line to define a global platform for your project
-platform :ios, '11.2'
+platform :ios, '13.0'
 
 target 'pokeFW' do
   # Comment the next line if you don't want to use dynamic frameworks
   use_frameworks!
 
   # Pods for pokeFW
+    pod 'Alamofire'
     pod 'AlamofireImage'
     pod 'CodableAlamofire'
-    pod 'KeychainSwift'
-
-  target 'pokeFWTests' do
-    # Pods for testing
-    pod 'AlamofireImage'
-    pod 'CodableAlamofire'
-    pod 'KeychainSwift'
-  end
 
 end
 
