@@ -11,6 +11,7 @@ import UIKit
 
 public protocol InfoViewDelegate: class {
     func viewShouldReturn(view: InfoView, height: CGFloat)
+    func emptyViewShouldReturn(errorMessage: String, type: String)
 }
 
 public class InfoView: UIView {
@@ -106,7 +107,7 @@ public class InfoView: UIView {
             descriptionImageView.widthAnchor.constraint(equalToConstant: descriptionImage?.size.width ?? 0),
             descriptionImageView.centerXAnchor.constraint(equalTo: centerXAnchor, constant: 0)
         ])
-            layoutIfNeeded()
+        layoutIfNeeded()
         let height: CGFloat = 15 + getDescriptionHeight() + 15 + (descriptionImage?.size.height ?? 0) + 15
         infoViewDelegate?.viewShouldReturn(view: self, height: height)
     }
@@ -116,7 +117,7 @@ public class InfoView: UIView {
     fileprivate func getDescriptionImage(keyword: String) {
         let urlAPI = "https://pokeapi.co/api/v2/pokemon/\(keyword)"
         SpriteViewModel.getSprite(url: urlAPI) { (data) in
-            let stringURL = data.sprites?.back_default ?? ""
+            let stringURL = data.sprites?.front_default ?? ""
             let url = URL(string: stringURL)
             self.descriptionImageURL = url!
             self.downloadImage(from: url!)
@@ -154,9 +155,9 @@ public class InfoView: UIView {
                 if dataArray.count > 0 {
                     for item in dataArray {
                         var appendText = item.flavor_text ?? ""
-                            appendText = appendText.replacingOccurrences(of: "\n", with: " ")
-                            appendText = appendText.replacingOccurrences(of: "\u{0C}", with: " ")
-                            text.append(appendText)
+                        appendText = appendText.replacingOccurrences(of: "\n", with: " ")
+                        appendText = appendText.replacingOccurrences(of: "\u{0C}", with: " ")
+                        text.append(appendText)
                     }
                     // text will be translated to shakspearean style
                     // if there is no text the reason is ratelimiting. for more information: https://funtranslations.com/api/shakespeare
@@ -182,8 +183,17 @@ public class InfoView: UIView {
                     }
                 }
             }
+            else {
+                self.infoViewDelegate?.emptyViewShouldReturn(errorMessage: "No Pokemon found.", type: "No Data")
+            }
         } failHandler: { (error) in
             print(error)
+            if error == "" {
+                self.infoViewDelegate?.emptyViewShouldReturn(errorMessage: "No Pokemon found.", type: "No Data")
+            }
+            else {
+                self.infoViewDelegate?.emptyViewShouldReturn(errorMessage: "Search is not available now. Please try again later.", type: "Error")
+            }
         }
     }
 }

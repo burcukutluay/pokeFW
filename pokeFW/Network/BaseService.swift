@@ -95,6 +95,7 @@ final class BaseService {
                                                                                                 break
                                                                                             case .failure:
                                                                                                 print("Error : \(response)")
+                                                                                                failHandler(self.errorCode)
                                                                                                 break
                                                                                             }
                                                                                         })
