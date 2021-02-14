@@ -133,7 +133,6 @@ public class InfoView: UIView {
     func downloadImage(from url: URL) {
         getData(from: url) { data, response, error in
             guard let data = data, error == nil else { return }
-            print(response?.suggestedFilename ?? url.lastPathComponent)
             DispatchQueue.main.async() { [weak self] in
                 self?.descriptionImage = UIImage(data: data)
                 self?.createSubviews()
@@ -161,27 +160,26 @@ public class InfoView: UIView {
                     }
                     // text will be translated to shakspearean style
                     // if there is no text the reason is ratelimiting. for more information: https://funtranslations.com/api/shakespeare
-                    /* let url = "https://api.funtranslations.com/translate/shakespeare.json"
-                     ShakespearenViewModel.getShakespeareanDetail(text: text, url: url) { (data) in
-                     print(data)
-                     self.descriptionLabel.text = data.contents?.translated ?? ""
-                     self.descriptionText = data.contents?.translated ?? ""
-                     // update constraints during run time
-                     self.redrawUpdateViews()
+                     let url = "https://api.funtranslations.com/translate/shakespeare.json"
+                     ShakespearenViewModel.getShakespeareanDetail(text: text, url: url) { (shakespeareData) in
+                     //self.descriptionLabel.text = shakespeareData.contents?.translated ?? ""
+                     self.descriptionText = shakespeareData.contents?.translated ?? ""
+                        let varities = data.varieties ?? []
+                        for item in varities {
+                            if (item.is_default ?? false) {
+                                // get & set image
+                                self.getDescriptionImage(keyword: item.pokemon?.name ?? "")
+                            }
+                        }
                      } failHandler: { (error) in
                      print(error)
-                     }*/
+                        self.infoViewDelegate?.emptyViewShouldReturn(errorMessage: error, type: "Error")
+                     }
                     // read from shakespeare translator API thats why commented :)
-                    self.descriptionText = text
+                    //self.descriptionText = text
                 }
                 
-                let varities = data.varieties ?? []
-                for item in varities {
-                    if (item.is_default ?? false) {
-                        // get & set image
-                        self.getDescriptionImage(keyword: item.pokemon?.name ?? "")
-                    }
-                }
+
             }
             else {
                 self.infoViewDelegate?.emptyViewShouldReturn(errorMessage: "No Pokemon found.", type: "No Data")

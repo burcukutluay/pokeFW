@@ -91,7 +91,6 @@ final class BaseService {
                                                                                             switch response.result {
                                                                                             case .success(let value):
                                                                                                 successHandler(value)
-                                                                                                print(parameters ?? "")
                                                                                                 break
                                                                                             case .failure:
                                                                                                 print("Error : \(response)")
