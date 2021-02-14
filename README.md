@@ -2,7 +2,7 @@
 
 ## About pokeFW
 
-pokeFW is a framework which gets the result of the searched pokemon Shakespearian style description and default pokemon front image with given keyword. 
+pokeFW is a framework which gets the result of the searched pokemon Shakespearean style description and default pokemon front image with given keyword. 
 - As a result if the pokemon found by the given keyword, pokeFW returns a component (UIView, named InfoView - self). 
 - If there is no matched pokemon with the given keyword, pokeFW returns error message with error type ("No Data", "Error").
 
@@ -36,7 +36,7 @@ If there is matched pokemon with the keyword, viewShouldReturn delegation will b
 ```
   func viewShouldReturn(view: InfoView, height: CGFloat) // returns InfoView(self) with result (the description and the image)
  ```
-According to viewShouldReturn, view (InfoView - UIView) will be returned with Shakespearian description and the image. height (CGFloat) is a calculated height of the description and the image will be returned. So that imported view controller or class will be informed about the actual height of the view.
+According to viewShouldReturn, view (InfoView - UIView) will be returned with Shakespearean description and the image. height (CGFloat) is a calculated height of the description and the image will be returned. So that imported view controller or class will be informed about the actual height of the view.
 
 If there is no matched pokemon with the keyword or there is a network depended error, emptyViewShouldReturn delegation will be fired. 
 ```
