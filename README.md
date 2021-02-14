@@ -32,6 +32,8 @@ public protocol InfoViewDelegate: class {
 }
 ```
 
+As a summary, pokeFW should be implemented, the result view, InfoView, should be inited. ```InfoViewDelegate``` protocol should be implemented to get the result. To start the search processes ```func getAndSetResultView(keyword: String)``` should be fired with the keyword. After that, ```InfoViewDelegate``` functions will be fired. To clear the content of the InfoView, ```func deleteSubviews()``` should be called.
+
 If there is matched pokemon with the keyword, viewShouldReturn delegation will be fired. 
 ```
   func viewShouldReturn(view: InfoView, height: CGFloat) // returns InfoView(self) with result (the description and the image)
@@ -57,7 +59,7 @@ public func deleteSubviews()
 ```
 ### pokeFW Public Variables
 ```
-    public var descriptionText: String = ""
-    public var descriptionImageURL: URL?
+public var descriptionText: String = ""
+public var descriptionImageURL: URL?
 ```
 
