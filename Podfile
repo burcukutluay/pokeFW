@@ -10,6 +10,13 @@ target 'pokeFW' do
     pod 'AlamofireImage'
     pod 'CodableAlamofire'
 
+  target 'pokeFWTests' do
+    # Pods for testing
+    pod 'Alamofire'
+    pod 'AlamofireImage'
+    pod 'CodableAlamofire'
+  end
+
 end
 
 post_install do |installer_representation|
