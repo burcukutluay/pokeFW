@@ -1,0 +1,11 @@
+framework module pokeFW {
+  umbrella header "pokeFW.h"
+
+  export *
+  module * { export * }
+}
+
+module pokeFW.Swift {
+    header "pokeFW-Swift.h"
+    requires objc
+}
