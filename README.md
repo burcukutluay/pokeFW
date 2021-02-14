@@ -1,21 +1,18 @@
-# pokeFW READ ME
-
-## About pokeFW
+# About pokeFW
 
 pokeFW is a framework which gets the result of the searched pokemon Shakespearean style description and default pokemon front image with given keyword. 
 - As a result if the pokemon found by the given keyword, pokeFW returns a component (UIView, named InfoView - self). 
 - If there is no matched pokemon with the given keyword, pokeFW returns error message with error type ("No Data", "Error").
 
-
-
 ## pokeFW Dependencies
 
 pokeFW deployment target is IOS 13.0.
 pokeFW uses following pods for API calls and download images:
-
-   'Alamofire'
-   'AlamofireImage'
-   'CodableAlamofire'
+```
+    pod 'Alamofire'
+    pod 'AlamofireImage'
+    pod 'CodableAlamofire'
+ ```
 
 ## pokeFW How to Use
 
