@@ -13,6 +13,13 @@ pokeFW uses following pods for API calls and download images:
     pod 'AlamofireImage'
     pod 'CodableAlamofire'
  ```
+ 
+## pokeFW How to Implement to XCode Project
+
+To implement pokeFW, pokeFW.xcframework should be added to project as xcframework. (under build folder)
+To include a framework to Xcode project, choose Project > Add to Project and select the framework directory.
+Alternatively, you can control-click your project group and choose Add Files > Existing Frameworks from the contextual menu.
+For sample project that uses pokeFW [pokeSearchApp](https://github.com/burcukutluay/pokeSearchApp/) is available on github.
 
 ## pokeFW How to Use
 
